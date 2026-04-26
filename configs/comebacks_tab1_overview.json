@@ -1,0 +1,237 @@
+{
+  "dashboard_title": "Comeback Leads — Overview",
+  "dataset_id": 2,
+  "default_filters": [
+    {
+      "column": "country",
+      "type": "filter_select",
+      "multiple": true
+    },
+    {
+      "column": "offer_date",
+      "type": "filter_time"
+    },
+    {
+      "column": "city",
+      "type": "filter_select",
+      "multiple": true
+    },
+    {
+      "column": "gender",
+      "type": "filter_select",
+      "multiple": true
+    },
+    {
+      "column": "device_type",
+      "type": "filter_select",
+      "multiple": true
+    },
+    {
+      "column": "send_to_amocrm",
+      "type": "filter_select",
+      "multiple": true,
+      "label": "Sent to CRM"
+    }
+  ],
+  "charts": [
+    {
+      "name": "Total Offers",
+      "viz_type": "big_number_total",
+      "width": 2,
+      "height": 10,
+      "row": 1,
+      "params": {
+        "metric": {
+          "expressionType": "SQL",
+          "sqlExpression": "COUNT(offer_id)",
+          "label": "Total Offers"
+        },
+        "header_font_size": 0.3,
+        "subheader_font_size": 0.15
+      }
+    },
+    {
+      "name": "Conversion Rate %",
+      "viz_type": "big_number_total",
+      "width": 2,
+      "height": 10,
+      "row": 1,
+      "params": {
+        "metric": {
+          "expressionType": "SQL",
+          "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)",
+          "label": "CR %"
+        },
+        "header_font_size": 0.3,
+        "subheader_font_size": 0.15,
+        "y_axis_format": ".2f"
+      }
+    },
+    {
+      "name": "Average Check",
+      "viz_type": "big_number_total",
+      "width": 2,
+      "height": 10,
+      "row": 1,
+      "params": {
+        "metric": {
+          "expressionType": "SQL",
+          "sqlExpression": "ROUND(AVG(purchase_price)::NUMERIC, 2)",
+          "label": "Avg Check"
+        },
+        "header_font_size": 0.3,
+        "subheader_font_size": 0.15,
+        "y_axis_format": ",.2f"
+      }
+    },
+    {
+      "name": "Total Revenue",
+      "viz_type": "big_number_total",
+      "width": 2,
+      "height": 10,
+      "row": 1,
+      "params": {
+        "metric": {
+          "expressionType": "SQL",
+          "sqlExpression": "ROUND(SUM(purchase_price)::NUMERIC, 2)",
+          "label": "Total Revenue"
+        },
+        "header_font_size": 0.3,
+        "subheader_font_size": 0.15,
+        "y_axis_format": ",.0f"
+      }
+    },
+    {
+      "name": "Median Days to Purchase",
+      "viz_type": "big_number_total",
+      "width": 2,
+      "height": 10,
+      "row": 1,
+      "params": {
+        "metric": {
+          "expressionType": "SQL",
+          "sqlExpression": "PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY days_to_purchase)",
+          "label": "Median Days"
+        },
+        "header_font_size": 0.3,
+        "subheader_font_size": 0.15,
+        "y_axis_format": ".1f"
+      }
+    },
+    {
+      "name": "CRM Coverage %",
+      "viz_type": "big_number_total",
+      "width": 2,
+      "height": 10,
+      "row": 1,
+      "params": {
+        "metric": {
+          "expressionType": "SQL",
+          "sqlExpression": "ROUND(SUM(CASE WHEN send_to_amocrm THEN 1 ELSE 0 END)::NUMERIC / NULLIF(COUNT(*), 0) * 100, 2)",
+          "label": "CRM %"
+        },
+        "header_font_size": 0.3,
+        "subheader_font_size": 0.15,
+        "y_axis_format": ".2f"
+      }
+    },
+    {
+      "name": "Offers & CR Trend (Weekly)",
+      "viz_type": "mixed_timeseries",
+      "width": 12,
+      "height": 50,
+      "row": 2,
+      "params": {
+        "x_axis": "offer_date",
+        "time_grain_sqla": "P1W",
+        "metrics": [
+          {
+            "expressionType": "SQL",
+            "sqlExpression": "COUNT(offer_id)",
+            "label": "Offers"
+          }
+        ],
+        "groupby": [],
+        "metrics_b": [
+          {
+            "expressionType": "SQL",
+            "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)",
+            "label": "CR %"
+          }
+        ],
+        "groupby_b": [],
+        "chartType": "bar",
+        "chartTypeB": "line",
+        "yAxisIndex": 0,
+        "yAxisIndexB": 1,
+        "show_legend": true,
+        "legendOrientation": "top",
+        "truncateYAxis": false,
+        "y_axis_format": ",.0f",
+        "y_axis_format_secondary": ".1f",
+        "tooltipTimeFormat": "%Y-%m-%d",
+        "x_axis_time_format": "%Y-%m-%d",
+        "rich_tooltip": true,
+        "order_desc": true,
+        "row_limit": 10000
+      }
+    },
+    {
+      "name": "Revenue by Week",
+      "viz_type": "echarts_timeseries_bar",
+      "width": 6,
+      "height": 50,
+      "row": 3,
+      "params": {
+        "x_axis": "offer_date",
+        "time_grain_sqla": "P1W",
+        "metrics": [
+          {
+            "expressionType": "SQL",
+            "sqlExpression": "ROUND(SUM(purchase_price)::NUMERIC, 0)",
+            "label": "Revenue"
+          }
+        ],
+        "groupby": [],
+        "show_legend": false,
+        "y_axis_format": ",.0f",
+        "tooltipTimeFormat": "%Y-%m-%d",
+        "x_axis_time_format": "%Y-%m-%d",
+        "rich_tooltip": true,
+        "order_desc": true,
+        "row_limit": 10000,
+        "color_scheme": "supersetColors"
+      }
+    },
+    {
+      "name": "CR % Trend by Month",
+      "viz_type": "echarts_timeseries_line",
+      "width": 6,
+      "height": 50,
+      "row": 3,
+      "params": {
+        "x_axis": "offer_date",
+        "time_grain_sqla": "P1M",
+        "metrics": [
+          {
+            "expressionType": "SQL",
+            "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)",
+            "label": "CR %"
+          }
+        ],
+        "groupby": [],
+        "show_legend": false,
+        "y_axis_format": ".1f",
+        "tooltipTimeFormat": "%Y-%m",
+        "x_axis_time_format": "%Y-%m",
+        "rich_tooltip": true,
+        "markerEnabled": true,
+        "markerSize": 6,
+        "order_desc": true,
+        "row_limit": 10000,
+        "color_scheme": "supersetColors"
+      }
+    }
+  ],
+  "layout": "auto"
+}

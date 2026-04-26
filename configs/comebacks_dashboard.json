@@ -1,0 +1,566 @@
+{
+  "dashboard_title": "Comeback Leads Analytics",
+  "dataset_id": 2,
+  "default_filters": [
+    {
+      "column": "country",
+      "type": "filter_select",
+      "multiple": true
+    },
+    {
+      "column": "offer_date",
+      "type": "filter_time"
+    },
+    {
+      "column": "city",
+      "type": "filter_select",
+      "multiple": true
+    },
+    {
+      "column": "gender",
+      "type": "filter_select",
+      "multiple": true
+    },
+    {
+      "column": "device_type",
+      "type": "filter_select",
+      "multiple": true
+    },
+    {
+      "column": "send_to_amocrm",
+      "type": "filter_select",
+      "multiple": true,
+      "label": "Sent to CRM"
+    }
+  ],
+  "tabs": [
+    {
+      "title": "Overview",
+      "charts": [
+        {
+          "name": "Total Offers",
+          "viz_type": "big_number_total",
+          "width": 2, "height": 10, "row": 1,
+          "params": {
+            "metric": {"expressionType": "SQL", "sqlExpression": "COUNT(offer_id)", "label": "Total Offers"},
+            "header_font_size": 0.3, "subheader_font_size": 0.15
+          }
+        },
+        {
+          "name": "Conversion Rate %",
+          "viz_type": "big_number_total",
+          "width": 2, "height": 10, "row": 1,
+          "params": {
+            "metric": {"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "CR %"},
+            "header_font_size": 0.3, "subheader_font_size": 0.15
+          }
+        },
+        {
+          "name": "Average Check",
+          "viz_type": "big_number_total",
+          "width": 2, "height": 10, "row": 1,
+          "params": {
+            "metric": {"expressionType": "SQL", "sqlExpression": "ROUND(AVG(purchase_price)::NUMERIC, 2)", "label": "Avg Check"},
+            "header_font_size": 0.3, "subheader_font_size": 0.15
+          }
+        },
+        {
+          "name": "Total Revenue",
+          "viz_type": "big_number_total",
+          "width": 2, "height": 10, "row": 1,
+          "params": {
+            "metric": {"expressionType": "SQL", "sqlExpression": "ROUND(SUM(purchase_price)::NUMERIC, 2)", "label": "Revenue"},
+            "header_font_size": 0.3, "subheader_font_size": 0.15, "y_axis_format": ",.0f"
+          }
+        },
+        {
+          "name": "Median Days to Purchase",
+          "viz_type": "big_number_total",
+          "width": 2, "height": 10, "row": 1,
+          "params": {
+            "metric": {"expressionType": "SQL", "sqlExpression": "PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY days_to_purchase)", "label": "Median Days"},
+            "header_font_size": 0.3, "subheader_font_size": 0.15
+          }
+        },
+        {
+          "name": "CRM Coverage %",
+          "viz_type": "big_number_total",
+          "width": 2, "height": 10, "row": 1,
+          "params": {
+            "metric": {"expressionType": "SQL", "sqlExpression": "ROUND(SUM(CASE WHEN send_to_amocrm THEN 1 ELSE 0 END)::NUMERIC / NULLIF(COUNT(*), 0) * 100, 2)", "label": "CRM %"},
+            "header_font_size": 0.3, "subheader_font_size": 0.15
+          }
+        },
+        {
+          "name": "Offers & CR Trend (Weekly)",
+          "viz_type": "mixed_timeseries",
+          "width": 12, "height": 50, "row": 2,
+          "params": {
+            "x_axis": "offer_date", "time_grain_sqla": "P1W",
+            "metrics": [{"expressionType": "SQL", "sqlExpression": "COUNT(offer_id)", "label": "Offers"}],
+            "groupby": [],
+            "metrics_b": [{"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "CR %"}],
+            "groupby_b": [],
+            "chartType": "bar", "chartTypeB": "line",
+            "yAxisIndex": 0, "yAxisIndexB": 1,
+            "show_legend": true, "legendOrientation": "top",
+            "y_axis_format": ",.0f", "y_axis_format_secondary": ".1f",
+            "tooltipTimeFormat": "%Y-%m-%d", "x_axis_time_format": "%Y-%m-%d",
+            "rich_tooltip": true, "order_desc": true, "row_limit": 10000
+          }
+        },
+        {
+          "name": "Revenue by Week",
+          "viz_type": "echarts_timeseries_bar",
+          "width": 6, "height": 50, "row": 3,
+          "params": {
+            "x_axis": "offer_date", "time_grain_sqla": "P1W",
+            "metrics": [{"expressionType": "SQL", "sqlExpression": "ROUND(SUM(purchase_price)::NUMERIC, 0)", "label": "Revenue"}],
+            "groupby": [],
+            "show_legend": false, "y_axis_format": ",.0f",
+            "tooltipTimeFormat": "%Y-%m-%d", "x_axis_time_format": "%Y-%m-%d",
+            "rich_tooltip": true, "order_desc": true, "row_limit": 10000
+          }
+        },
+        {
+          "name": "CR % Trend by Month",
+          "viz_type": "echarts_timeseries_line",
+          "width": 6, "height": 50, "row": 3,
+          "params": {
+            "x_axis": "offer_date", "time_grain_sqla": "P1M",
+            "metrics": [{"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "CR %"}],
+            "groupby": [],
+            "show_legend": false, "y_axis_format": ".1f",
+            "tooltipTimeFormat": "%Y-%m", "x_axis_time_format": "%Y-%m",
+            "rich_tooltip": true, "markerEnabled": true, "markerSize": 6,
+            "order_desc": true, "row_limit": 10000
+          }
+        }
+      ]
+    },
+    {
+      "title": "CRM Effectiveness",
+      "charts": [
+        {
+          "name": "CR: CRM vs No CRM",
+          "viz_type": "echarts_timeseries_bar",
+          "width": 6, "height": 50, "row": 1,
+          "params": {
+            "x_axis": "send_to_amocrm", "time_grain_sqla": null,
+            "metrics": [{"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "CR %"}],
+            "groupby": ["send_to_amocrm"],
+            "show_legend": false, "y_axis_format": ".1f",
+            "x_axis_title": "Sent to AmoCRM", "y_axis_title": "CR %",
+            "rich_tooltip": true, "row_limit": 10000
+          }
+        },
+        {
+          "name": "Avg Check: CRM vs No CRM",
+          "viz_type": "echarts_timeseries_bar",
+          "width": 6, "height": 50, "row": 1,
+          "params": {
+            "x_axis": "send_to_amocrm", "time_grain_sqla": null,
+            "metrics": [{"expressionType": "SQL", "sqlExpression": "ROUND(AVG(purchase_price)::NUMERIC, 2)", "label": "Avg Check"}],
+            "groupby": ["send_to_amocrm"],
+            "show_legend": false, "y_axis_format": ",.0f",
+            "x_axis_title": "Sent to AmoCRM", "y_axis_title": "Avg Check",
+            "rich_tooltip": true, "row_limit": 10000
+          }
+        },
+        {
+          "name": "CR by CRM Status (Weekly Trend)",
+          "viz_type": "echarts_timeseries_line",
+          "width": 12, "height": 50, "row": 2,
+          "params": {
+            "x_axis": "offer_date", "time_grain_sqla": "P1W",
+            "metrics": [{"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "CR %"}],
+            "groupby": ["send_to_amocrm"],
+            "show_legend": true, "legendOrientation": "top",
+            "y_axis_format": ".1f",
+            "tooltipTimeFormat": "%Y-%m-%d", "x_axis_time_format": "%Y-%m-%d",
+            "rich_tooltip": true, "markerEnabled": true, "markerSize": 6,
+            "order_desc": true, "row_limit": 10000
+          }
+        },
+        {
+          "name": "CRM Delay: Days from Offer to CRM Transfer",
+          "viz_type": "dist_bar",
+          "width": 6, "height": 50, "row": 3,
+          "params": {
+            "metrics": [{"expressionType": "SQL", "sqlExpression": "COUNT(*)", "label": "Count"}],
+            "groupby": [{"expressionType": "SQL", "sqlExpression": "send_to_amocrm_date - offer_date", "label": "Delay Days"}],
+            "adhoc_filters": [{"expressionType": "SQL", "sqlExpression": "send_to_amocrm = true", "clause": "WHERE"}],
+            "show_legend": false, "y_axis_format": ",.0f",
+            "x_axis_title": "Days Delay", "y_axis_title": "Count",
+            "rich_tooltip": true, "row_limit": 10000
+          }
+        },
+        {
+          "name": "CR by CRM Delay Days",
+          "viz_type": "dist_bar",
+          "width": 6, "height": 50, "row": 3,
+          "params": {
+            "metrics": [{"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "CR %"}],
+            "groupby": [{"expressionType": "SQL", "sqlExpression": "send_to_amocrm_date - offer_date", "label": "Delay Days"}],
+            "adhoc_filters": [{"expressionType": "SQL", "sqlExpression": "send_to_amocrm = true", "clause": "WHERE"}],
+            "show_legend": false, "y_axis_format": ".1f",
+            "x_axis_title": "Days Delay", "y_axis_title": "CR %",
+            "rich_tooltip": true, "row_limit": 10000
+          }
+        },
+        {
+          "name": "CRM Effectiveness by City",
+          "viz_type": "table",
+          "width": 12, "height": 50, "row": 4,
+          "params": {
+            "metrics": [
+              {"expressionType": "SQL", "sqlExpression": "COUNT(offer_id)", "label": "Total Offers"},
+              {"expressionType": "SQL", "sqlExpression": "SUM(CASE WHEN send_to_amocrm THEN 1 ELSE 0 END)", "label": "CRM Count"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(SUM(CASE WHEN send_to_amocrm THEN 1 ELSE 0 END)::NUMERIC / NULLIF(COUNT(*), 0) * 100, 1)", "label": "CRM %"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date) FILTER (WHERE send_to_amocrm)::NUMERIC / NULLIF(COUNT(*) FILTER (WHERE send_to_amocrm), 0) * 100, 2)", "label": "CR (CRM)"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date) FILTER (WHERE NOT send_to_amocrm)::NUMERIC / NULLIF(COUNT(*) FILTER (WHERE NOT send_to_amocrm), 0) * 100, 2)", "label": "CR (No CRM)"}
+            ],
+            "groupby": ["city"],
+            "order_by_cols": ["{\"expressionType\":\"SQL\",\"sqlExpression\":\"COUNT(offer_id)\",\"label\":\"Total Offers\"}", false],
+            "order_desc": true, "row_limit": 30,
+            "include_search": true, "page_length": 20
+          }
+        }
+      ]
+    },
+    {
+      "title": "Timing & Inactivity",
+      "charts": [
+        {
+          "name": "Distribution of Days from Registration",
+          "viz_type": "dist_bar",
+          "width": 6, "height": 50, "row": 1,
+          "params": {
+            "metrics": [{"expressionType": "SQL", "sqlExpression": "COUNT(*)", "label": "Count"}],
+            "groupby": [{"expressionType": "SQL", "sqlExpression": "CASE WHEN days_from_reg <= 30 THEN '0-30' WHEN days_from_reg <= 60 THEN '31-60' WHEN days_from_reg <= 90 THEN '61-90' WHEN days_from_reg <= 180 THEN '91-180' WHEN days_from_reg <= 365 THEN '181-365' ELSE '365+' END", "label": "Days from Reg"}],
+            "show_legend": false, "y_axis_format": ",.0f",
+            "rich_tooltip": true, "row_limit": 10000
+          }
+        },
+        {
+          "name": "CR by Inactivity Cohort",
+          "viz_type": "dist_bar",
+          "width": 6, "height": 50, "row": 1,
+          "params": {
+            "metrics": [{"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "CR %"}],
+            "groupby": [{"expressionType": "SQL", "sqlExpression": "CASE WHEN days_from_reg <= 30 THEN '0-30' WHEN days_from_reg <= 60 THEN '31-60' WHEN days_from_reg <= 90 THEN '61-90' WHEN days_from_reg <= 180 THEN '91-180' WHEN days_from_reg <= 365 THEN '181-365' ELSE '365+' END", "label": "Days from Reg"}],
+            "show_legend": false, "y_axis_format": ".1f",
+            "rich_tooltip": true, "row_limit": 10000
+          }
+        },
+        {
+          "name": "Avg Check by Inactivity Cohort",
+          "viz_type": "dist_bar",
+          "width": 6, "height": 50, "row": 2,
+          "params": {
+            "metrics": [{"expressionType": "SQL", "sqlExpression": "ROUND(AVG(purchase_price)::NUMERIC, 2)", "label": "Avg Check"}],
+            "groupby": [{"expressionType": "SQL", "sqlExpression": "CASE WHEN days_from_reg <= 30 THEN '0-30' WHEN days_from_reg <= 60 THEN '31-60' WHEN days_from_reg <= 90 THEN '61-90' WHEN days_from_reg <= 180 THEN '91-180' WHEN days_from_reg <= 365 THEN '181-365' ELSE '365+' END", "label": "Days from Reg"}],
+            "show_legend": false, "y_axis_format": ",.0f",
+            "rich_tooltip": true, "row_limit": 10000
+          }
+        },
+        {
+          "name": "CR: Inactivity Cohort x CRM Status",
+          "viz_type": "heatmap",
+          "width": 6, "height": 50, "row": 2,
+          "params": {
+            "all_columns_x": {"expressionType": "SQL", "sqlExpression": "CASE WHEN days_from_reg <= 30 THEN '0-30' WHEN days_from_reg <= 60 THEN '31-60' WHEN days_from_reg <= 90 THEN '61-90' WHEN days_from_reg <= 180 THEN '91-180' WHEN days_from_reg <= 365 THEN '181-365' ELSE '365+' END", "label": "Days from Reg"},
+            "all_columns_y": "send_to_amocrm",
+            "metric": {"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "CR %"},
+            "linear_color_scheme": "superset_seq_1",
+            "show_values": true, "y_axis_format": ".1f",
+            "row_limit": 10000
+          }
+        },
+        {
+          "name": "Avg Days to Purchase by Inactivity Cohort",
+          "viz_type": "dist_bar",
+          "width": 6, "height": 50, "row": 3,
+          "params": {
+            "metrics": [{"expressionType": "SQL", "sqlExpression": "ROUND(AVG(days_to_purchase)::NUMERIC, 1)", "label": "Avg Days to Purchase"}],
+            "groupby": [{"expressionType": "SQL", "sqlExpression": "CASE WHEN days_from_reg <= 30 THEN '0-30' WHEN days_from_reg <= 60 THEN '31-60' WHEN days_from_reg <= 90 THEN '61-90' WHEN days_from_reg <= 180 THEN '91-180' WHEN days_from_reg <= 365 THEN '181-365' ELSE '365+' END", "label": "Days from Reg"}],
+            "show_legend": false, "y_axis_format": ".1f",
+            "rich_tooltip": true, "row_limit": 10000
+          }
+        },
+        {
+          "name": "Cumulative Conversion by Day After Offer",
+          "viz_type": "dist_bar",
+          "width": 6, "height": 50, "row": 3,
+          "params": {
+            "metrics": [
+              {"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(*) FILTER (WHERE days_to_purchase <= 1)::NUMERIC / NULLIF(COUNT(*), 0) * 100, 2)", "label": "Day 1"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(*) FILTER (WHERE days_to_purchase <= 2)::NUMERIC / NULLIF(COUNT(*), 0) * 100, 2)", "label": "Day 2"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(*) FILTER (WHERE days_to_purchase <= 3)::NUMERIC / NULLIF(COUNT(*), 0) * 100, 2)", "label": "Day 3"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(*) FILTER (WHERE days_to_purchase <= 4)::NUMERIC / NULLIF(COUNT(*), 0) * 100, 2)", "label": "Day 4"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(*) FILTER (WHERE days_to_purchase <= 5)::NUMERIC / NULLIF(COUNT(*), 0) * 100, 2)", "label": "Day 5"}
+            ],
+            "groupby": [],
+            "show_legend": true, "y_axis_format": ".1f",
+            "rich_tooltip": true, "row_limit": 10000
+          }
+        }
+      ]
+    },
+    {
+      "title": "Sociodem Segmentation",
+      "charts": [
+        {
+          "name": "CR by Gender",
+          "viz_type": "dist_bar",
+          "width": 4, "height": 50, "row": 1,
+          "params": {
+            "metrics": [
+              {"expressionType": "SQL", "sqlExpression": "COUNT(offer_id)", "label": "Offers"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "CR %"}
+            ],
+            "groupby": ["gender"],
+            "show_legend": true, "y_axis_format": ",.0f",
+            "rich_tooltip": true, "row_limit": 10000
+          }
+        },
+        {
+          "name": "CR by Age Group",
+          "viz_type": "dist_bar",
+          "width": 4, "height": 50, "row": 1,
+          "params": {
+            "metrics": [
+              {"expressionType": "SQL", "sqlExpression": "COUNT(offer_id)", "label": "Offers"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "CR %"}
+            ],
+            "groupby": [{"expressionType": "SQL", "sqlExpression": "CASE WHEN user_age < 21 THEN '16-20' WHEN user_age < 26 THEN '21-25' WHEN user_age < 31 THEN '26-30' WHEN user_age < 36 THEN '31-35' WHEN user_age < 41 THEN '36-40' ELSE '41+' END", "label": "Age Group"}],
+            "show_legend": true, "y_axis_format": ",.0f",
+            "rich_tooltip": true, "row_limit": 10000
+          }
+        },
+        {
+          "name": "CR by Device",
+          "viz_type": "dist_bar",
+          "width": 4, "height": 50, "row": 1,
+          "params": {
+            "metrics": [
+              {"expressionType": "SQL", "sqlExpression": "COUNT(offer_id)", "label": "Offers"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "CR %"}
+            ],
+            "groupby": ["device_type"],
+            "show_legend": true, "y_axis_format": ",.0f",
+            "rich_tooltip": true, "row_limit": 10000
+          }
+        },
+        {
+          "name": "CR by City (Top 20)",
+          "viz_type": "table",
+          "width": 12, "height": 50, "row": 2,
+          "params": {
+            "metrics": [
+              {"expressionType": "SQL", "sqlExpression": "COUNT(offer_id)", "label": "Offers"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "CR %"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(AVG(purchase_price)::NUMERIC, 2)", "label": "Avg Check"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(SUM(purchase_price)::NUMERIC, 0)", "label": "Revenue"}
+            ],
+            "groupby": ["city"],
+            "order_desc": true, "row_limit": 20,
+            "include_search": true, "page_length": 20
+          }
+        },
+        {
+          "name": "Heatmap: Gender x Age Group (CR %)",
+          "viz_type": "heatmap",
+          "width": 6, "height": 50, "row": 3,
+          "params": {
+            "all_columns_x": {"expressionType": "SQL", "sqlExpression": "CASE WHEN user_age < 21 THEN '16-20' WHEN user_age < 26 THEN '21-25' WHEN user_age < 31 THEN '26-30' WHEN user_age < 36 THEN '31-35' WHEN user_age < 41 THEN '36-40' ELSE '41+' END", "label": "Age Group"},
+            "all_columns_y": "gender",
+            "metric": {"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "CR %"},
+            "linear_color_scheme": "superset_seq_1",
+            "show_values": true, "y_axis_format": ".1f",
+            "row_limit": 10000
+          }
+        },
+        {
+          "name": "Heatmap: City x Device (CR %)",
+          "viz_type": "heatmap",
+          "width": 6, "height": 50, "row": 3,
+          "params": {
+            "all_columns_x": "device_type",
+            "all_columns_y": "city",
+            "metric": {"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "CR %"},
+            "linear_color_scheme": "superset_seq_1",
+            "show_values": true, "y_axis_format": ".1f",
+            "series_limit": 10,
+            "row_limit": 10000
+          }
+        },
+        {
+          "name": "Avg Check by Gender & Age",
+          "viz_type": "dist_bar",
+          "width": 12, "height": 50, "row": 4,
+          "params": {
+            "metrics": [{"expressionType": "SQL", "sqlExpression": "ROUND(AVG(purchase_price)::NUMERIC, 2)", "label": "Avg Check"}],
+            "groupby": [{"expressionType": "SQL", "sqlExpression": "CASE WHEN user_age < 21 THEN '16-20' WHEN user_age < 26 THEN '21-25' WHEN user_age < 31 THEN '26-30' WHEN user_age < 36 THEN '31-35' WHEN user_age < 41 THEN '36-40' ELSE '41+' END", "label": "Age Group"}],
+            "columns": ["gender"],
+            "show_legend": true, "y_axis_format": ",.0f",
+            "rich_tooltip": true, "row_limit": 10000
+          }
+        }
+      ]
+    },
+    {
+      "title": "Operational Monitoring",
+      "charts": [
+        {
+          "name": "Offers Last 7 Days (Daily)",
+          "viz_type": "mixed_timeseries",
+          "width": 12, "height": 50, "row": 1,
+          "params": {
+            "x_axis": "offer_date", "time_grain_sqla": "P1D",
+            "metrics": [{"expressionType": "SQL", "sqlExpression": "COUNT(offer_id)", "label": "Offers"}],
+            "groupby": [],
+            "metrics_b": [{"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "CR %"}],
+            "groupby_b": [],
+            "chartType": "bar", "chartTypeB": "line",
+            "yAxisIndex": 0, "yAxisIndexB": 1,
+            "show_legend": true, "legendOrientation": "top",
+            "y_axis_format": ",.0f", "y_axis_format_secondary": ".1f",
+            "tooltipTimeFormat": "%Y-%m-%d", "x_axis_time_format": "%Y-%m-%d",
+            "rich_tooltip": true, "order_desc": true, "row_limit": 10000
+          }
+        },
+        {
+          "name": "Yesterday's Offers by City",
+          "viz_type": "table",
+          "width": 6, "height": 50, "row": 2,
+          "params": {
+            "metrics": [
+              {"expressionType": "SQL", "sqlExpression": "COUNT(offer_id)", "label": "Offers"},
+              {"expressionType": "SQL", "sqlExpression": "SUM(CASE WHEN send_to_amocrm THEN 1 ELSE 0 END)", "label": "CRM Sent"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "CR %"}
+            ],
+            "groupby": ["city"],
+            "adhoc_filters": [{"expressionType": "SQL", "sqlExpression": "offer_date = CURRENT_DATE - 1", "clause": "WHERE"}],
+            "order_desc": true, "row_limit": 30,
+            "include_search": true, "page_length": 15
+          }
+        },
+        {
+          "name": "Open Window Conversion (Last 5 Days)",
+          "viz_type": "table",
+          "width": 6, "height": 50, "row": 2,
+          "params": {
+            "metrics": [
+              {"expressionType": "SQL", "sqlExpression": "COUNT(offer_id)", "label": "Total Offers"},
+              {"expressionType": "SQL", "sqlExpression": "COUNT(purchase_date)", "label": "Converted"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "CR %"},
+              {"expressionType": "SQL", "sqlExpression": "COUNT(offer_id) - COUNT(purchase_date)", "label": "Still in Window"}
+            ],
+            "groupby": ["offer_date"],
+            "adhoc_filters": [{"expressionType": "SQL", "sqlExpression": "offer_date >= CURRENT_DATE - 5", "clause": "WHERE"}],
+            "order_desc": true, "row_limit": 10,
+            "page_length": 10
+          }
+        },
+        {
+          "name": "CR vs 30-Day Moving Average",
+          "viz_type": "echarts_timeseries_line",
+          "width": 12, "height": 50, "row": 3,
+          "params": {
+            "x_axis": "offer_date", "time_grain_sqla": "P1D",
+            "metrics": [{"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "Daily CR %"}],
+            "groupby": [],
+            "show_legend": true, "legendOrientation": "top",
+            "y_axis_format": ".1f",
+            "tooltipTimeFormat": "%Y-%m-%d", "x_axis_time_format": "%Y-%m-%d",
+            "rich_tooltip": true, "markerEnabled": false,
+            "rolling_type": "None",
+            "order_desc": true, "row_limit": 10000
+          }
+        }
+      ]
+    },
+    {
+      "title": "Unit Economics & ROI",
+      "charts": [
+        {
+          "name": "Revenue vs Offers Trend",
+          "viz_type": "mixed_timeseries",
+          "width": 12, "height": 50, "row": 1,
+          "params": {
+            "x_axis": "offer_date", "time_grain_sqla": "P1W",
+            "metrics": [{"expressionType": "SQL", "sqlExpression": "COUNT(offer_id)", "label": "Offers"}],
+            "groupby": [],
+            "metrics_b": [{"expressionType": "SQL", "sqlExpression": "ROUND(SUM(purchase_price)::NUMERIC, 0)", "label": "Revenue"}],
+            "groupby_b": [],
+            "chartType": "bar", "chartTypeB": "line",
+            "yAxisIndex": 0, "yAxisIndexB": 1,
+            "show_legend": true, "legendOrientation": "top",
+            "y_axis_format": ",.0f", "y_axis_format_secondary": ",.0f",
+            "tooltipTimeFormat": "%Y-%m-%d", "x_axis_time_format": "%Y-%m-%d",
+            "rich_tooltip": true, "order_desc": true, "row_limit": 10000
+          }
+        },
+        {
+          "name": "Revenue per Offer (RPO) by Week",
+          "viz_type": "echarts_timeseries_line",
+          "width": 6, "height": 50, "row": 2,
+          "params": {
+            "x_axis": "offer_date", "time_grain_sqla": "P1W",
+            "metrics": [{"expressionType": "SQL", "sqlExpression": "ROUND(SUM(purchase_price)::NUMERIC / NULLIF(COUNT(offer_id), 0), 2)", "label": "RPO"}],
+            "groupby": [],
+            "show_legend": false, "y_axis_format": ",.2f",
+            "tooltipTimeFormat": "%Y-%m-%d", "x_axis_time_format": "%Y-%m-%d",
+            "rich_tooltip": true, "markerEnabled": true, "markerSize": 6,
+            "order_desc": true, "row_limit": 10000
+          }
+        },
+        {
+          "name": "Avg Check Trend by Month",
+          "viz_type": "echarts_timeseries_line",
+          "width": 6, "height": 50, "row": 2,
+          "params": {
+            "x_axis": "offer_date", "time_grain_sqla": "P1M",
+            "metrics": [{"expressionType": "SQL", "sqlExpression": "ROUND(AVG(purchase_price)::NUMERIC, 2)", "label": "Avg Check"}],
+            "groupby": [],
+            "show_legend": false, "y_axis_format": ",.0f",
+            "tooltipTimeFormat": "%Y-%m", "x_axis_time_format": "%Y-%m",
+            "rich_tooltip": true, "markerEnabled": true, "markerSize": 6,
+            "order_desc": true, "row_limit": 10000
+          }
+        },
+        {
+          "name": "Purchase Price Distribution",
+          "viz_type": "histogram",
+          "width": 6, "height": 50, "row": 3,
+          "params": {
+            "all_columns_x": ["purchase_price"],
+            "link_length": 10,
+            "x_axis_title": "Purchase Price", "y_axis_title": "Count",
+            "adhoc_filters": [{"expressionType": "SQL", "sqlExpression": "purchase_price IS NOT NULL", "clause": "WHERE"}],
+            "row_limit": 10000
+          }
+        },
+        {
+          "name": "Country Performance",
+          "viz_type": "table",
+          "width": 6, "height": 50, "row": 3,
+          "params": {
+            "metrics": [
+              {"expressionType": "SQL", "sqlExpression": "COUNT(offer_id)", "label": "Offers"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(COUNT(purchase_date)::NUMERIC / NULLIF(COUNT(offer_id), 0) * 100, 2)", "label": "CR %"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(AVG(purchase_price)::NUMERIC, 2)", "label": "Avg Check"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(SUM(purchase_price)::NUMERIC, 0)", "label": "Revenue"},
+              {"expressionType": "SQL", "sqlExpression": "ROUND(SUM(purchase_price)::NUMERIC / NULLIF(COUNT(offer_id), 0), 2)", "label": "RPO"}
+            ],
+            "groupby": ["country"],
+            "order_desc": true, "row_limit": 20,
+            "page_length": 20
+          }
+        }
+      ]
+    }
+  ],
+  "layout": "auto"
+}

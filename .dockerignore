@@ -1,0 +1,13 @@
+.git
+.gitignore
+.claude
+.planning
+.idea
+.venv
+.env
+.env.example
+CLAUDE.md
+README.md
+docs
+scripts
+.dockerignore

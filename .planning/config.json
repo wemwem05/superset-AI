@@ -1,0 +1,16 @@
+{
+  "mode": "yolo",
+  "planning": {
+    "commit_docs": true,
+    "search_gitignored": false
+  },
+  "agents": {
+    "researcher": true,
+    "plan_checker": true,
+    "verifier": true
+  },
+  "profile": "balanced",
+  "workflow": {
+    "_auto_chain_active": false
+  }
+}

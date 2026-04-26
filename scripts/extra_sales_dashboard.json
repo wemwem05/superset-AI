@@ -1,0 +1,382 @@
+{
+  "dashboard_title": "Extra Sales",
+  "dataset_id": 1,
+  "color_scheme": "supersetColors",
+
+  "default_filters": [
+    {
+      "column": "product",
+      "type": "filter_select",
+      "label": "Product",
+      "multiple": true
+    },
+    {
+      "column": "user_city",
+      "type": "filter_select",
+      "label": "City",
+      "multiple": true
+    },
+    {
+      "column": "user_type",
+      "type": "filter_select",
+      "label": "User Type",
+      "multiple": true,
+      "default_value_exclude": ["ONEFIT_MEMBER"],
+      "controlValues_extra": {
+        "inverseSelection": false
+      }
+    },
+    {
+      "column": "refund",
+      "type": "filter_select",
+      "label": "Refund",
+      "multiple": false,
+      "default_value": [false]
+    },
+    {
+      "column": "price",
+      "type": "filter_range",
+      "label": "Paid (Price > 0)",
+      "default_value": [1, null]
+    },
+    {
+      "column": "purchase_date",
+      "type": "filter_time",
+      "label": "Purchase Date"
+    }
+  ],
+
+  "charts": [
+    {
+      "name": "Revenue Target (200M)",
+      "viz_type": "gauge_chart",
+      "row": 1,
+      "width": 4,
+      "height": 40,
+      "params": {
+        "viz_type": "gauge_chart",
+        "groupby": [],
+        "metric": {
+          "expressionType": "SIMPLE",
+          "column": {"column_name": "price", "type": "DOUBLE PRECISION"},
+          "aggregate": "SUM",
+          "label": "Revenue"
+        },
+        "row_limit": 10000,
+        "min_val": 0,
+        "max_val": 200000000,
+        "start_angle": 225,
+        "end_angle": -45,
+        "color_scheme": "supersetColors",
+        "font_size": 15,
+        "number_format": ",.0f",
+        "show_pointer": true,
+        "animation": true,
+        "show_axis_tick": true,
+        "show_split_line": true,
+        "split_number": 10,
+        "show_progress": true,
+        "overlap": true,
+        "round_number": true,
+        "intervals": [100000000, 150000000, 200000000],
+        "interval_color_indices": [1, 5, 9]
+      }
+    },
+    {
+      "name": "Total Sales",
+      "viz_type": "big_number_total",
+      "row": 1,
+      "width": 2,
+      "height": 40,
+      "params": {
+        "viz_type": "big_number_total",
+        "metric": "count",
+        "subheader": "transactions",
+        "y_axis_format": ",.0f",
+        "header_font_size": 0.4,
+        "subheader_font_size": 0.15
+      }
+    },
+    {
+      "name": "Total Revenue",
+      "viz_type": "big_number_total",
+      "row": 1,
+      "width": 2,
+      "height": 40,
+      "params": {
+        "viz_type": "big_number_total",
+        "metric": {
+          "expressionType": "SIMPLE",
+          "column": {"column_name": "price", "type": "DOUBLE PRECISION"},
+          "aggregate": "SUM",
+          "label": "Revenue"
+        },
+        "subheader": "total revenue",
+        "y_axis_format": ",.0f",
+        "header_font_size": 0.4,
+        "subheader_font_size": 0.15
+      }
+    },
+    {
+      "name": "AOV",
+      "viz_type": "big_number_total",
+      "row": 1,
+      "width": 2,
+      "height": 40,
+      "params": {
+        "viz_type": "big_number_total",
+        "metric": {
+          "expressionType": "SIMPLE",
+          "column": {"column_name": "price", "type": "DOUBLE PRECISION"},
+          "aggregate": "AVG",
+          "label": "AOV"
+        },
+        "subheader": "avg order value",
+        "y_axis_format": ",.0f",
+        "header_font_size": 0.4,
+        "subheader_font_size": 0.15
+      }
+    },
+    {
+      "name": "Refund Rate",
+      "viz_type": "big_number_total",
+      "row": 1,
+      "width": 2,
+      "height": 40,
+      "params": {
+        "viz_type": "big_number_total",
+        "metric": {
+          "expressionType": "SQL",
+          "sqlExpression": "ROUND(SUM(CASE WHEN refund THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(*), 0), 1)",
+          "label": "Refund Rate %"
+        },
+        "subheader": "refund rate %",
+        "y_axis_format": ".1f",
+        "header_font_size": 0.4,
+        "subheader_font_size": 0.15
+      }
+    },
+    {
+      "name": "Revenue by Days",
+      "viz_type": "echarts_timeseries_bar",
+      "row": 2,
+      "width": 12,
+      "height": 55,
+      "params": {
+        "viz_type": "echarts_timeseries_bar",
+        "x_axis": "purchase_date",
+        "time_grain_sqla": "P1D",
+        "metrics": [
+          {
+            "expressionType": "SIMPLE",
+            "column": {"column_name": "price", "type": "DOUBLE PRECISION"},
+            "aggregate": "SUM",
+            "label": "Revenue"
+          }
+        ],
+        "groupby": [],
+        "order_desc": true,
+        "row_limit": 10000,
+        "color_scheme": "supersetColors",
+        "show_legend": true,
+        "legendType": "scroll",
+        "legendOrientation": "top",
+        "x_axis_title": "",
+        "x_axis_title_margin": 15,
+        "y_axis_title": "Revenue",
+        "y_axis_title_margin": 50,
+        "y_axis_format": "SMART_NUMBER",
+        "rich_tooltip": true,
+        "tooltipTimeFormat": "%Y-%m-%d",
+        "show_value": false,
+        "zoomable": true,
+        "minorSplitLine": false,
+        "opacity": 0.8,
+        "markerEnabled": false
+      }
+    },
+    {
+      "name": "Revenue by Products",
+      "viz_type": "echarts_timeseries_bar",
+      "row": 3,
+      "width": 6,
+      "height": 55,
+      "params": {
+        "viz_type": "echarts_timeseries_bar",
+        "x_axis": "product",
+        "metrics": [
+          {
+            "expressionType": "SIMPLE",
+            "column": {"column_name": "price", "type": "DOUBLE PRECISION"},
+            "aggregate": "SUM",
+            "label": "Revenue"
+          }
+        ],
+        "groupby": [],
+        "order_desc": true,
+        "row_limit": 50,
+        "color_scheme": "supersetColors",
+        "show_legend": false,
+        "y_axis_format": "SMART_NUMBER",
+        "rich_tooltip": true,
+        "show_value": true,
+        "opacity": 0.85
+      }
+    },
+    {
+      "name": "Revenue by Cities",
+      "viz_type": "echarts_timeseries_bar",
+      "row": 3,
+      "width": 6,
+      "height": 55,
+      "params": {
+        "viz_type": "echarts_timeseries_bar",
+        "x_axis": "user_city",
+        "metrics": [
+          {
+            "expressionType": "SIMPLE",
+            "column": {"column_name": "price", "type": "DOUBLE PRECISION"},
+            "aggregate": "SUM",
+            "label": "Revenue"
+          }
+        ],
+        "groupby": [],
+        "order_desc": true,
+        "row_limit": 20,
+        "color_scheme": "supersetColors",
+        "show_legend": false,
+        "y_axis_format": "SMART_NUMBER",
+        "rich_tooltip": true,
+        "show_value": true,
+        "opacity": 0.85
+      }
+    },
+    {
+      "name": "Revenue by User Type",
+      "viz_type": "pie",
+      "row": 4,
+      "width": 4,
+      "height": 50,
+      "params": {
+        "viz_type": "pie",
+        "groupby": ["user_type"],
+        "metric": {
+          "expressionType": "SIMPLE",
+          "column": {"column_name": "price", "type": "DOUBLE PRECISION"},
+          "aggregate": "SUM",
+          "label": "Revenue"
+        },
+        "row_limit": 20,
+        "sort_by_metric": true,
+        "color_scheme": "supersetColors",
+        "show_legend": true,
+        "legendType": "scroll",
+        "legendOrientation": "left",
+        "label_type": "key_percent",
+        "number_format": "SMART_NUMBER",
+        "show_labels": true,
+        "show_labels_threshold": 5,
+        "date_format": "smart_date",
+        "outerRadius": 70,
+        "innerRadius": 40,
+        "label_line": true
+      }
+    },
+    {
+      "name": "Sales Trend (Monthly)",
+      "viz_type": "echarts_timeseries_line",
+      "row": 4,
+      "width": 4,
+      "height": 50,
+      "params": {
+        "viz_type": "echarts_timeseries_line",
+        "x_axis": "purchase_date",
+        "time_grain_sqla": "P1M",
+        "metrics": [
+          "count",
+          {
+            "expressionType": "SIMPLE",
+            "column": {"column_name": "price", "type": "DOUBLE PRECISION"},
+            "aggregate": "SUM",
+            "label": "Revenue"
+          }
+        ],
+        "groupby": [],
+        "row_limit": 10000,
+        "color_scheme": "supersetColors",
+        "show_legend": true,
+        "legendType": "scroll",
+        "legendOrientation": "top",
+        "y_axis_format": "SMART_NUMBER",
+        "rich_tooltip": true,
+        "tooltipTimeFormat": "%b %Y",
+        "markerEnabled": true,
+        "markerSize": 6,
+        "zoomable": true,
+        "opacity": 0.2,
+        "area": true,
+        "y_axis_bounds": [null, null]
+      }
+    },
+    {
+      "name": "Top Refunded Products",
+      "viz_type": "echarts_timeseries_bar",
+      "row": 4,
+      "width": 4,
+      "height": 50,
+      "params": {
+        "viz_type": "echarts_timeseries_bar",
+        "x_axis": "product",
+        "metrics": [
+          {
+            "expressionType": "SIMPLE",
+            "column": {"column_name": "refund_amount", "type": "DOUBLE PRECISION"},
+            "aggregate": "SUM",
+            "label": "Refund Amount"
+          }
+        ],
+        "groupby": [],
+        "order_desc": true,
+        "row_limit": 20,
+        "color_scheme": "bnbColors",
+        "show_legend": false,
+        "y_axis_format": "SMART_NUMBER",
+        "rich_tooltip": true,
+        "show_value": true,
+        "opacity": 0.75
+      }
+    },
+    {
+      "name": "Sales Data",
+      "viz_type": "table",
+      "row": 5,
+      "width": 12,
+      "height": 60,
+      "params": {
+        "viz_type": "table",
+        "query_mode": "raw",
+        "all_columns": [
+          "purchase_date", "product", "full_name", "user_type",
+          "user_city", "country", "price", "refund",
+          "refund_date", "refund_amount"
+        ],
+        "row_limit": 200,
+        "order_desc": true,
+        "order_by_cols": ["[\"purchase_date\", false]"],
+        "color_pn": true,
+        "table_timestamp_format": "%Y-%m-%d",
+        "page_length": 50,
+        "include_search": true,
+        "show_cell_bars": true,
+        "conditional_formatting": [
+          {
+            "column": "price",
+            "operator": ">",
+            "targetValue": 0,
+            "colorScheme": "#ACE1C4"
+          }
+        ]
+      }
+    }
+  ]
+}
