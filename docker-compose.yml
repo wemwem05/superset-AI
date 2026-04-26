@@ -1,6 +1,6 @@
 x-superset-common: &superset-common
   build: .
-  image: martian322/superset:latest
+  image:
   env_file: .env
   environment:
     SUPERSET_CONFIG_PATH: /app/superset_config.py
